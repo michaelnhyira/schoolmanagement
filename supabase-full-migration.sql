@@ -112,13 +112,32 @@ CREATE TABLE students (
   school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR,
   full_name VARCHAR,
+  dob VARCHAR,
+  gender VARCHAR,
+  birth_place VARCHAR,
+  nationality VARCHAR,
+  religion VARCHAR,
+  address TEXT,
+  prev_school VARCHAR,
+  last_class VARCHAR,
+  special_needs TEXT,
+  guardian_name VARCHAR,
+  relationship VARCHAR,
+  occupation VARCHAR,
+  guardian_contact VARCHAR,
+  guardian_address TEXT,
+  admission_number VARCHAR,
   grade VARCHAR,
   class VARCHAR,
   assigned_class VARCHAR,
+  house VARCHAR,
   parent_name VARCHAR,
   phone VARCHAR,
   photo_url TEXT,
+  enrollment_date VARCHAR,
   status VARCHAR DEFAULT 'active',
+  balance NUMERIC DEFAULT 0,
+  last_payment_date VARCHAR,
   promotion_status VARCHAR,
   previous_class VARCHAR,
   promoted_from_class VARCHAR,
@@ -137,9 +156,28 @@ CREATE TABLE teachers (
   school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR,
   full_name VARCHAR,
-  subject VARCHAR,
+  dob VARCHAR,
+  gender VARCHAR,
+  marital_status VARCHAR,
+  nationality VARCHAR,
+  religion VARCHAR,
+  address TEXT,
+  contact_number VARCHAR,
   phone VARCHAR,
   email VARCHAR,
+  qualification VARCHAR,
+  experience VARCHAR DEFAULT '0',
+  appointment_date VARCHAR,
+  hire_date VARCHAR,
+  specialization VARCHAR,
+  subjects JSONB DEFAULT '[]'::jsonb,
+  assigned_class VARCHAR,
+  guardian_name VARCHAR,
+  relationship VARCHAR,
+  occupation VARCHAR,
+  guardian_contact VARCHAR,
+  guardian_address TEXT,
+  subject VARCHAR,
   photo_url TEXT,
   status VARCHAR DEFAULT 'active',
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -153,10 +191,22 @@ CREATE TABLE classes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR NOT NULL,
+  value VARCHAR,
+  level VARCHAR,
   grade VARCHAR,
   subdivision VARCHAR,
   education_level VARCHAR,
+  room VARCHAR DEFAULT 'TBA',
   capacity INTEGER DEFAULT 25,
+  max_students INTEGER DEFAULT 25,
+  academic_year VARCHAR,
+  subjects JSONB DEFAULT '[]'::jsonb,
+  description TEXT,
+  class_teacher_id VARCHAR,
+  class_teacher_name VARCHAR,
+  class_teacher JSONB,
+  student_count INTEGER DEFAULT 0,
+  age_range VARCHAR DEFAULT 'TBA',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -180,11 +230,19 @@ CREATE TABLE subjects (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR NOT NULL,
+  code VARCHAR,
+  description TEXT,
   teacher VARCHAR,
   teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
   credits INTEGER DEFAULT 3,
+  level VARCHAR DEFAULT 'Primary',
+  grade_level VARCHAR,
   duration VARCHAR DEFAULT 'Full Year',
   education_level VARCHAR,
+  status VARCHAR DEFAULT 'active',
+  is_core BOOLEAN DEFAULT false,
+  is_elective BOOLEAN DEFAULT false,
+  prerequisites JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -476,6 +534,20 @@ ON CONFLICT (code) DO NOTHING;
 INSERT INTO user_roles (email, school_id, display_name, role, created_by, is_active)
 VALUES ('michaelnhyira77@gmail.com', '00000000-0000-0000-0000-000000000001', 'Michael Nhyira (Admin)', 'admin', 'system', true)
 ON CONFLICT (email) DO NOTHING;
+
+-- ============================================
+-- INSERT DEFAULT ACADEMIC PERIOD (active)
+-- ============================================
+INSERT INTO academic_periods (id, school_id, academic_year, term, is_active, description, created_at, updated_at)
+VALUES ('2026_1st Term', '00000000-0000-0000-0000-000000000001', '2026', '1st Term', true, '2026 1st Term - Default active period', NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================
+-- INSERT SYSTEM ACTIVE PERIOD
+-- ============================================
+INSERT INTO system (id, school_id, academic_year, term, period_id, is_active, is_lock_active, is_notice_active, created_at, updated_at)
+VALUES ('activePeriod', '00000000-0000-0000-0000-000000000001', '2026', '1st Term', '2026_1st Term', true, false, false, NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
 -- ROW LEVEL SECURITY (RLS)
