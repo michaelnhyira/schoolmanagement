@@ -25,7 +25,7 @@ CREATE TABLE schools (
 -- 1. USER ROLES TABLE
 CREATE TABLE user_roles (
   email VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   display_name VARCHAR NOT NULL,
   role VARCHAR NOT NULL CHECK (role IN ('admin', 'teacher', 'accountant')),
   created_by VARCHAR,
@@ -38,7 +38,7 @@ CREATE TABLE user_roles (
 -- 2. USERS TABLE (for auth state tracking)
 CREATE TABLE users (
   uid VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   email VARCHAR,
   display_name VARCHAR,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -49,7 +49,7 @@ CREATE TABLE users (
 -- 3. STUDENTS TABLE
 CREATE TABLE students (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR,
   full_name VARCHAR,
   grade VARCHAR,
@@ -72,7 +72,7 @@ CREATE TABLE students (
 -- 4. TEACHERS TABLE
 CREATE TABLE teachers (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR,
   full_name VARCHAR,
   subject VARCHAR,
@@ -87,7 +87,7 @@ CREATE TABLE teachers (
 -- 5. CLASSES TABLE
 CREATE TABLE classes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR NOT NULL,
   grade VARCHAR,
   subdivision VARCHAR,
@@ -100,8 +100,8 @@ CREATE TABLE classes (
 -- 6. CLASS SUBDIVISIONS TABLE
 CREATE TABLE class_subdivisions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
-  class_id UUID REFERENCES classes(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+  class_id UUID REFERENCES classes(id) ON DELETE CASCADE,
   subdivision VARCHAR,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -110,10 +110,10 @@ CREATE TABLE class_subdivisions (
 -- 7. SUBJECTS TABLE
 CREATE TABLE subjects (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   name VARCHAR NOT NULL,
   teacher VARCHAR,
-  teacher_id UUID REFERENCES teachers(id),
+  teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
   credits INTEGER DEFAULT 3,
   duration VARCHAR DEFAULT 'Full Year',
   education_level VARCHAR,
@@ -124,7 +124,7 @@ CREATE TABLE subjects (
 -- 8. FEES TABLE
 CREATE TABLE fees (
   id VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   academic_year VARCHAR,
   term VARCHAR,
   class_fees JSONB,
@@ -136,7 +136,7 @@ CREATE TABLE fees (
 -- 9. ACADEMIC PERIODS TABLE
 CREATE TABLE academic_periods (
   id VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   academic_year VARCHAR,
   term VARCHAR,
   is_active BOOLEAN DEFAULT false,
@@ -151,8 +151,8 @@ CREATE TABLE academic_periods (
 -- 10. ACADEMIC PERIOD STUDENT PAYMENTS TABLE
 CREATE TABLE academic_period_student_payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
-  academic_period_id VARCHAR REFERENCES academic_periods(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+  academic_period_id VARCHAR REFERENCES academic_periods(id) ON DELETE CASCADE,
   student_id VARCHAR,
   student_name VARCHAR,
   class_name VARCHAR,
@@ -171,8 +171,8 @@ CREATE TABLE academic_period_student_payments (
 -- 11. ACADEMIC PERIOD PAYMENTS TABLE
 CREATE TABLE academic_period_payments (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
-  academic_period_id VARCHAR REFERENCES academic_periods(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+  academic_period_id VARCHAR REFERENCES academic_periods(id) ON DELETE CASCADE,
   student_id VARCHAR,
   student_name VARCHAR,
   amount NUMERIC,
@@ -187,7 +187,7 @@ CREATE TABLE academic_period_payments (
 -- 12. GRADES ACADEMIC PERIOD TABLE
 CREATE TABLE grades_academic_period (
   id VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   academic_year VARCHAR,
   term VARCHAR,
   is_active BOOLEAN DEFAULT false,
@@ -201,8 +201,8 @@ CREATE TABLE grades_academic_period (
 -- 13. GRADES ACADEMIC PERIOD GRADES TABLE
 CREATE TABLE grades_academic_period_grades (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
-  grades_academic_period_id VARCHAR REFERENCES grades_academic_period(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+  grades_academic_period_id VARCHAR REFERENCES grades_academic_period(id) ON DELETE CASCADE,
   student_id VARCHAR,
   student_name VARCHAR,
   grades JSONB DEFAULT '{}'::jsonb,
@@ -213,7 +213,7 @@ CREATE TABLE grades_academic_period_grades (
 -- 14. ATTENDANCE TABLE
 CREATE TABLE attendance (
   id VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   academic_year VARCHAR,
   term VARCHAR,
   description TEXT,
@@ -225,8 +225,8 @@ CREATE TABLE attendance (
 -- 15. ATTENDANCE STUDENTS TABLE
 CREATE TABLE attendance_students (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
-  attendance_id VARCHAR REFERENCES attendance(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+  attendance_id VARCHAR REFERENCES attendance(id) ON DELETE CASCADE,
   student_id VARCHAR,
   academic_year VARCHAR,
   term VARCHAR,
@@ -239,7 +239,7 @@ CREATE TABLE attendance_students (
 -- 16. PROMOTIONS TABLE
 CREATE TABLE promotions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   from_class VARCHAR,
   to_class VARCHAR,
   promoted_by VARCHAR,
@@ -259,7 +259,7 @@ CREATE TABLE promotions (
 -- 17. COMPLETED BATCHES TABLE
 CREATE TABLE completed_batches (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   batch_name VARCHAR,
   completion_year VARCHAR,
   students UUID[],
@@ -276,8 +276,8 @@ CREATE TABLE completed_batches (
 -- 18. COMPLETED BATCH STUDENTS TABLE
 CREATE TABLE completed_batch_students (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
-  completed_batch_id UUID REFERENCES completed_batches(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+  completed_batch_id UUID REFERENCES completed_batches(id) ON DELETE CASCADE,
   student_id VARCHAR,
   name VARCHAR,
   full_name VARCHAR,
@@ -295,7 +295,7 @@ CREATE TABLE completed_batch_students (
 -- 19. SYSTEM TABLE
 CREATE TABLE system (
   id VARCHAR PRIMARY KEY,
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   academic_year VARCHAR,
   term VARCHAR,
   period_id VARCHAR,
@@ -313,7 +313,7 @@ CREATE TABLE system (
 -- 20. SCHOOL SETTINGS TABLE
 CREATE TABLE school_settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  school_id UUID REFERENCES schools(id),
+  school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
   setting_key VARCHAR NOT NULL,
   setting_value TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
