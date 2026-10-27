@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>school-management</title>
+    <script>
+      // Apply dark mode class immediately before React renders to prevent flash
+      (function() {
+        try {
+          const theme = localStorage.getItem('theme');
+          const root = document.documentElement;
+          if (theme === 'dark') {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+            // Ensure light mode is explicitly set
+            if (!theme || theme === 'light') {
+              localStorage.setItem('theme', 'light');
+            }
+          }
+        } catch (e) {
+          // Fallback if localStorage is not available
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="assets/index-BTgNAKKh.js"></script>
+    <link rel="modulepreload" crossorigin href="assets/vendor-DR2sf8cw.js">
+    <link rel="modulepreload" crossorigin href="assets/react-vendor-DNNb75SV.js">
+    <link rel="modulepreload" crossorigin href="assets/jspdf-Cx7fGp8k.js">
+    <link rel="modulepreload" crossorigin href="assets/firebase-other-BOwdpl8n.js">
+    <link rel="modulepreload" crossorigin href="assets/firebase-app-n2MmV1J-.js">
+    <link rel="modulepreload" crossorigin href="assets/firebase-auth-CiZMoCBx.js">
+    <link rel="modulepreload" crossorigin href="assets/firebase-firestore-BMhQJmhw.js">
+    <link rel="modulepreload" crossorigin href="assets/firebase-storage-BwsoX-9E.js">
+    <link rel="stylesheet" crossorigin href="assets/index-Bee4yJqd.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
